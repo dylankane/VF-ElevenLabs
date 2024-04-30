@@ -67,6 +67,17 @@ app.post('/synthesize', async (req, res) => {
         const audioFilePath = path.join(audioDir, audioFileName);
         fs.writeFileSync(audioFilePath, audioBuffer);
 
+        // Set a timeout to delete the file after 10 minutes
+        setTimeout(() => {
+            fs.unlink(audioFilePath, err => {
+                if (err) {
+                    console.error(`Failed to delete ${audioFilePath}:`, err);
+                } else {
+                    console.log(`${audioFilePath} was deleted.`);
+                }
+            });
+        }, 600000); // 600000 milliseconds = 10 minutes
+
         // Generate URL for the audio file
         const audioFileUrl = `${req.protocol}://${req.get('host')}/audio/${audioFileName}`;
         res.send({ audioFileUrl });
